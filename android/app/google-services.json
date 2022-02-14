@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "907057776957",
+    "project_id": "math-crud",
+    "storage_bucket": "math-crud.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:907057776957:android:64b7fd618d580457f6dd54",
+        "android_client_info": {
+          "package_name": "com.example.math_crud"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "907057776957-kmt9birt4883pfb7bs4eh8a3tsbg1n04.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAS5LxincXt9gelkho6m93YI6TH3Ljaeqg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "907057776957-kmt9birt4883pfb7bs4eh8a3tsbg1n04.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
