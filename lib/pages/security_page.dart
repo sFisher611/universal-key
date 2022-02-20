@@ -1,15 +1,160 @@
+import 'dart:ui';
+
+import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:hive/hive.dart';
+import 'package:math_crud/models/password_position.dart';
+import 'package:math_crud/route/route_generator.dart';
+import 'package:math_crud/service/fuction_generator.dart';
+import 'package:math_crud/widgets/material_icon_button.dart';
+import 'package:math_crud/widgets/material_number_button.dart';
+import 'package:math_crud/widgets/password_widget.dart';
 
 class SecurityPage extends StatefulWidget {
-  const SecurityPage({Key? key}) : super(key: key);
+  const SecurityPage({Key key}) : super(key: key);
 
   @override
   _SecurityPageState createState() => _SecurityPageState();
 }
 
 class _SecurityPageState extends State<SecurityPage> {
-  late Size size;
-  
+   Size size;
+  bool _isAnim = false;
+  PasswordPosition passwordPosition1 = PasswordPosition(text: "", active: true);
+  PasswordPosition passwordPosition2 =
+      PasswordPosition(text: "", active: false);
+  PasswordPosition passwordPosition3 =
+      PasswordPosition(text: "", active: false);
+  PasswordPosition passwordPosition4 =
+      PasswordPosition(text: "", active: false);
+  bool _isLoading = false;
+  String key = '';
+
+  @override
+  void initState() {
+    super.initState();
+    _startAnimation();
+    _loadingKeyAdmin();
+    setState(() {
+      key = FunctionGenerator.generatorKey();
+    });
+  }
+
+  _loadingKeyAdmin() async {
+    Box box = await Hive.openBox('base');
+    var admin = await box.get('admin');
+    if (admin != null) {
+      setState(() {
+        _isLoading = true;
+      });
+      await Future.delayed(const Duration(milliseconds: 2000));
+      setState(() {
+        _isLoading = false;
+      });
+
+      Navigator.of(context).pushNamedAndRemoveUntil(
+          RouteGenerator.main, (Route<dynamic> route) => false);
+    }
+  }
+
+  void _startAnimation() async {
+    await Future.delayed(const Duration(milliseconds: 200));
+    setState(() {
+      _isAnim = true;
+    });
+  }
+
+  void _checkPassword() async {
+    setState(() {
+      _isLoading = true;
+    });
+    await Future.delayed(const Duration(milliseconds: 5000));
+    setState(() {
+      _isLoading = false;
+    });
+    String text = passwordPosition1.text +
+        passwordPosition2.text +
+        passwordPosition3.text +
+        passwordPosition4.text;
+    if (FunctionGenerator.generatorCheck(text, key.toString())) {
+      Box box = await Hive.openBox('base');
+      await box.put("admin", '1');
+      Navigator.of(context).pushNamedAndRemoveUntil(
+          RouteGenerator.main, (Route<dynamic> route) => false);
+    }
+  }
+
+  void _passwordWrite(text) {
+    if (passwordPosition1.active) {
+      setState(() {
+        passwordPosition1.active = false;
+        passwordPosition1.text = text;
+        passwordPosition2.active = true;
+      });
+    } else if (passwordPosition2.active) {
+      setState(() {
+        passwordPosition2.active = false;
+        passwordPosition2.text = text;
+        passwordPosition3.active = true;
+      });
+    } else if (passwordPosition3.active) {
+      setState(() {
+        passwordPosition3.active = false;
+        passwordPosition3.text = text;
+        passwordPosition4.active = true;
+      });
+    } else if (passwordPosition4.active) {
+      setState(() {
+        passwordPosition4.active = false;
+        passwordPosition4.text = text;
+      });
+    } else {
+      //_checkPasword()
+    }
+  }
+
+  void passwordDelete() {
+    if (passwordPosition1.active) {
+    } else if (passwordPosition2.active) {
+      setState(() {
+        passwordPosition2.active = false;
+        passwordPosition1.text = '';
+        passwordPosition1.active = true;
+      });
+    } else if (passwordPosition3.active) {
+      setState(() {
+        passwordPosition3.active = false;
+        passwordPosition2.text = '';
+        passwordPosition2.active = true;
+      });
+    } else if (passwordPosition4.active) {
+      setState(() {
+        passwordPosition4.active = false;
+        passwordPosition3.text = '';
+        passwordPosition3.active = true;
+      });
+    } else {
+      setState(() {
+        passwordPosition4.active = true;
+        passwordPosition4.text = '';
+      });
+    }
+  }
+
+  _passwordClear() {
+    setState(() {
+      passwordPosition1.text = "";
+      passwordPosition2.text = "";
+      passwordPosition3.text = "";
+      passwordPosition4.text = "";
+      passwordPosition1.active = true;
+      passwordPosition2.active = false;
+      passwordPosition3.active = false;
+      passwordPosition4.active = false;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     size = MediaQuery.of(context).size;
@@ -29,102 +174,78 @@ class _SecurityPageState extends State<SecurityPage> {
                   children: [
                     Column(
                       mainAxisAlignment: MainAxisAlignment.center,
-                      children: const [
-                        Text(
-                          "Enter Code",
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontFamily: "ComicNeue",
-                            fontSize: 30,
-                          ),
-                        ),
-                        SizedBox(
+                      children: [
+                        AnimatedTextKit(
+                            animatedTexts: [
+                              TypewriterAnimatedText(
+                                "Enter Code",
+                                speed: const Duration(milliseconds: 200),
+                                textStyle: const TextStyle(
+                                  color: Colors.white,
+                                  fontFamily: "ComicNeue",
+                                  fontSize: 30,
+                                ),
+                              ),
+                            ],
+                            totalRepeatCount: 1,
+                            isRepeatingAnimation: true,
+                            repeatForever: false,
+                            displayFullTextOnTap: true,
+                            stopPauseOnTap: true),
+                        const SizedBox(
                           height: 10,
                         ),
-                        Text(
-                          "Key for existing password: 123463451",
-                          style: TextStyle(
-                            color: Colors.white38,
-                            fontFamily: "ComicNeue",
-                            fontSize: 12,
-                          ),
-                        ),
+                        AnimatedTextKit(
+                          animatedTexts: [
+                            TypewriterAnimatedText(
+                              "Key for existing password: " + key,
+                              textStyle: const TextStyle(
+                                color: Colors.white38,
+                                fontFamily: "ComicNeue",
+                                fontSize: 12,
+                              ),
+                            ),
+                          ],
+                          totalRepeatCount: 1,
+                        )
                       ],
                     ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
-                        SizedBox(),
-                        Container(
-                            padding: const EdgeInsets.all(6),
-                            height: 35,
-                            width: 35,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(50),
-                              border: Border.all(color: Colors.white, width: 2),
-                            ),
-                            child: Container(
-                              height: 30,
-                              width: 30,
-                              decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(50),
-                                  color: Colors.white),
+                        const SizedBox(),
+                        AnimatedOpacity(
+                            duration: const Duration(seconds: 2),
+                            opacity: _isAnim ? 1.0 : 0.0,
+                            child: PasswordWidget(
+                              passwordPosition: passwordPosition1,
                             )),
-                        Container(
-                            padding: const EdgeInsets.all(6),
-                            height: 35,
-                            width: 35,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(50),
-                              border: Border.all(color: Colors.white, width: 2),
-                            ),
-                            child: Container(
-                              height: 30,
-                              width: 30,
-                              decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(50),
-                                  color: Colors.white),
-                            )),
-                        Container(
-                            padding: const EdgeInsets.all(6),
-                            height: 35,
-                            width: 35,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(50),
-                              border: Border.all(color: Colors.white, width: 2),
-                            ),
-                            child: Container(
-                              height: 30,
-                              width: 30,
-                              decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(50),
-                                  color: Colors.white),
-                            )),
-                        Container(
-                            padding: const EdgeInsets.all(6),
-                            height: 35,
-                            width: 35,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(50),
-                              border: Border.all(color: Colors.white, width: 2),
-                            ),
-                            child: Container(
-                              height: 30,
-                              width: 30,
-                              decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(50),
-                                  color: Colors.white),
-                            )),
+                        AnimatedOpacity(
+                            duration: const Duration(seconds: 3),
+                            opacity: _isAnim ? 1.0 : 0.0,
+                            child: PasswordWidget(
+                                passwordPosition: passwordPosition2)),
+                        AnimatedOpacity(
+                            duration: const Duration(seconds: 4),
+                            opacity: _isAnim ? 1.0 : 0.0,
+                            child: PasswordWidget(
+                                passwordPosition: passwordPosition3)),
+                        AnimatedOpacity(
+                            duration: const Duration(seconds: 5),
+                            opacity: _isAnim ? 1.0 : 0.0,
+                            child: PasswordWidget(
+                                passwordPosition: passwordPosition4)),
                         const SizedBox(),
                       ],
                     )
                   ],
                 )),
             AnimatedPositioned(
-              bottom: 0,
+              bottom: _isAnim ? 0 : -1000,
               left: 0,
               right: 0,
-              duration: const Duration(milliseconds: 600),
+              curve: Curves.linear,
+              duration: const Duration(milliseconds: 1000),
               child: Container(
                 height: size.height * 0.53,
                 width: double.infinity,
@@ -149,21 +270,21 @@ class _SecurityPageState extends State<SecurityPage> {
                               child: MaterialNumberButton(
                                 size: size,
                                 text: "1",
-                                onPressed: (value) {},
+                                onPressed: _passwordWrite,
                               ),
                             ),
                             Expanded(
                               child: MaterialNumberButton(
                                 size: size,
                                 text: "2",
-                                onPressed: (value) {},
+                                onPressed: _passwordWrite,
                               ),
                             ),
                             Expanded(
                               child: MaterialNumberButton(
                                 size: size,
                                 text: "3",
-                                onPressed: (value) {},
+                                onPressed: _passwordWrite,
                               ),
                             ),
                           ],
@@ -178,21 +299,21 @@ class _SecurityPageState extends State<SecurityPage> {
                               child: MaterialNumberButton(
                                 size: size,
                                 text: "4",
-                                onPressed: (value) {},
+                                onPressed: _passwordWrite,
                               ),
                             ),
                             Expanded(
                               child: MaterialNumberButton(
                                 size: size,
                                 text: "5",
-                                onPressed: (value) {},
+                                onPressed: _passwordWrite,
                               ),
                             ),
                             Expanded(
                               child: MaterialNumberButton(
                                 size: size,
                                 text: "6",
-                                onPressed: (value) {},
+                                onPressed: _passwordWrite,
                               ),
                             ),
                           ],
@@ -207,21 +328,21 @@ class _SecurityPageState extends State<SecurityPage> {
                               child: MaterialNumberButton(
                                 size: size,
                                 text: "7",
-                                onPressed: (value) {},
+                                onPressed: _passwordWrite,
                               ),
                             ),
                             Expanded(
                               child: MaterialNumberButton(
                                 size: size,
                                 text: "8",
-                                onPressed: (value) {},
+                                onPressed: _passwordWrite,
                               ),
                             ),
                             Expanded(
                               child: MaterialNumberButton(
                                 size: size,
                                 text: "9",
-                                onPressed: (value) {},
+                                onPressed: _passwordWrite,
                               ),
                             ),
                           ],
@@ -243,13 +364,18 @@ class _SecurityPageState extends State<SecurityPage> {
                               child: MaterialNumberButton(
                                 size: size,
                                 text: "0",
-                                onPressed: (value) {},
+                                onPressed: _passwordWrite,
                               ),
                             ),
                             Expanded(
                               child: MaterialIconButton(
                                 size: size,
-                                onPressed: () {},
+                                onPressed: () {
+                                  passwordDelete();
+                                },
+                                onLongPress: () {
+                                  _passwordClear();
+                                },
                               ),
                             )
                           ],
@@ -269,7 +395,14 @@ class _SecurityPageState extends State<SecurityPage> {
                           splashColor: Colors.black,
                           highlightColor: Colors.black,
                           borderRadius: BorderRadius.circular(15),
-                          onTap: () {},
+                          onTap: () {
+                            if (passwordPosition1.text.isNotEmpty &&
+                                passwordPosition2.text.isNotEmpty &&
+                                passwordPosition3.text.isNotEmpty &&
+                                passwordPosition4.text.isNotEmpty) {
+                              _checkPassword();
+                            }
+                          },
                           child: Container(
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 10, vertical: 15),
@@ -291,88 +424,22 @@ class _SecurityPageState extends State<SecurityPage> {
                   ],
                 ),
               ),
+            ),
+            Offstage(
+              offstage: !_isLoading,
+              child: BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: 20.0, sigmaY: 20.0),
+                child: Container(
+                  color: Colors.white.withOpacity(0.1),
+                  child: const Center(
+                      child: SpinKitSquareCircle(
+                    color: Colors.white,
+                    size: 100.0,
+                  )),
+                ),
+              ),
             )
           ],
-        ),
-      ),
-    );
-  }
-}
-
-class MaterialNumberButton extends StatelessWidget {
-  MaterialNumberButton(
-      {Key? key,
-      required this.size,
-      required this.onPressed,
-      required this.text})
-      : super(key: key);
-
-  final Size size;
-  final String text;
-  Function onPressed;
-
-  @override
-  Widget build(BuildContext context) {
-    return Material(
-      color: Colors.transparent,
-      child: Ink(
-        width: size.height * 0.08,
-        height: size.height * 0.08,
-        color: Colors.transparent,
-        child: InkWell(
-          splashColor: Colors.transparent,
-          highlightColor: Colors.black,
-          borderRadius: BorderRadius.circular(5),
-          onTap: text != ""
-              ? () {
-                  onPressed(text);
-                }
-              : null,
-          child: Center(
-            child: Text(
-              text,
-              textAlign: TextAlign.center,
-              style: const TextStyle(
-                  color: Colors.white, fontSize: 35, fontFamily: "ComicNeue"),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class MaterialIconButton extends StatelessWidget {
-  MaterialIconButton({
-    Key? key,
-    required this.size,
-    required this.onPressed,
-  }) : super(key: key);
-
-  final Size size;
-
-  Function onPressed;
-
-  @override
-  Widget build(BuildContext context) {
-    return Material(
-      color: Colors.transparent,
-      child: Ink(
-        width: size.height * 0.08,
-        height: size.height * 0.08,
-        color: Colors.transparent,
-        child: InkWell(
-          splashColor: Colors.transparent,
-          highlightColor: Colors.black,
-          borderRadius: BorderRadius.circular(5),
-          onTap: () => onPressed,
-          child: const Center(
-            child: Icon(
-              Icons.backspace_outlined,
-              color: Colors.white60,
-              size: 30,
-            ),
-          ),
         ),
       ),
     );
