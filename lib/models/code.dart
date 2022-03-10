@@ -10,6 +10,8 @@ class Code {
     this.active,
     this.admin,
     this.token,
+    this.errorApi,
+    this.errorApp,
   });
 
   String date;
@@ -19,6 +21,8 @@ class Code {
   String name;
   String token;
   String admin;
+  bool errorApi;
+  bool errorApp;
   bool active;
 
   factory Code.fromJson(var json) => Code(
@@ -32,6 +36,8 @@ class Code {
         active: json["active"],
         admin: json['admin'],
         token: json['token'],
+        errorApi: json['error_api'],
+        errorApp: json['error_app'],
       );
 
   Map<String, dynamic> toJson() => {
@@ -43,5 +49,7 @@ class Code {
         "active": active,
         "admin": admin,
         "token": token,
+        "error_api": errorApi,
+        "error_app": errorApp,
       };
 }
