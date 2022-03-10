@@ -2,6 +2,10 @@ import 'dart:math';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:math_crud/models/code.dart';
+import 'package:math_crud/models/error_api.dart';
+import 'package:math_crud/models/error_app.dart';
+
+import '../models/admin.dart';
 
 class DataBase {
   FirebaseFirestore firestore;
@@ -14,7 +18,7 @@ class DataBase {
     List docs = [];
     try {
       querySnapshot =
-          await firestore.collection("test_base").orderBy('date').get();
+          await firestore.collection("user_base").orderBy('date').get();
       if (querySnapshot.docs.isNotEmpty) {
         for (var doc in querySnapshot.docs.toList()) {
           Code code = Code.fromJson(doc);
@@ -33,7 +37,7 @@ class DataBase {
     Code code;
     try {
       querySnapshot = await firestore
-          .collection("test_base")
+          .collection("user_base")
           .where('code', isEqualTo: codeResult)
           .get();
       if (querySnapshot.docs.isNotEmpty) {
@@ -53,7 +57,7 @@ class DataBase {
     List<Code> docs = [];
     try {
       querySnapshot = await firestore
-          .collection("test_base")
+          .collection("user_base")
           .where('active', isEqualTo: isActive)
           .get();
       if (querySnapshot.docs.isNotEmpty) {
@@ -71,7 +75,7 @@ class DataBase {
 
   Future<bool> update(Code code) async {
     try {
-      await firestore.collection("test_base").doc(code.id).update({
+      await firestore.collection("user_base").doc(code.id).update({
         'ip': code.ip,
         'name': code.name,
         'active': code.active,
@@ -86,7 +90,7 @@ class DataBase {
 
   Future<bool> delete(String id) async {
     try {
-      await firestore.collection("test_base").doc(id).delete();
+      await firestore.collection("user_base").doc(id).delete();
       return true;
     } catch (e) {
       print(e);
@@ -98,7 +102,7 @@ class DataBase {
     Random random = Random();
 
     try {
-      await firestore.collection("test_base").add({
+      await firestore.collection("user_base").add({
         "name": code.name,
         "code": code.code,
         "date": FieldValue.serverTimestamp(),
@@ -109,6 +113,97 @@ class DataBase {
       });
     } catch (e) {
       print(e);
+    }
+  }
+
+  //admin
+  Future<void> creatAdmin(Admin admin) async {
+    try {
+      await firestore.collection("admin_user").add({
+        "name": admin.name,
+        "active": false,
+        "token": admin.token,
+      });
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  Future<Admin> searchAdmin(adminToken) async {
+    QuerySnapshot querySnapshot;
+    Admin admin;
+    try {
+      querySnapshot = await firestore
+          .collection("admin_user")
+          .where('token', isEqualTo: adminToken)
+          .get();
+      if (querySnapshot.docs.isNotEmpty) {
+        for (var doc in querySnapshot.docs.toList()) {
+          admin = Admin.fromJson(doc);
+        }
+      }
+      return Future.value(admin);
+    } catch (e) {
+      print(e);
+      return Future.error(null);
+    }
+  }
+
+  Future<List<ErrorApp>> readErrorApp() async {
+    QuerySnapshot querySnapshot;
+    List<ErrorApp> docs = [];
+    try {
+      querySnapshot =
+          await firestore.collection("error_app").orderBy('date').get();
+      if (querySnapshot.docs.isNotEmpty) {
+        for (var doc in querySnapshot.docs.toList()) {
+          ErrorApp error = ErrorApp.fromJson(doc);
+          docs.add(error);
+        }
+      }
+      return Future.value(docs);
+    } catch (e) {
+      print(e);
+      return Future.error([]);
+    }
+  }
+
+  Future<bool> deleteErrorApp(String id) async {
+    try {
+      await firestore.collection("error_app").doc(id).delete();
+      return true;
+    } catch (e) {
+      print(e);
+      return false;
+    }
+  }
+
+  Future<List<ErrorApi>> readErrorApi() async {
+    QuerySnapshot querySnapshot;
+    List<ErrorApi> docs = [];
+    try {
+      querySnapshot =
+          await firestore.collection("error_backend").orderBy('date').get();
+      if (querySnapshot.docs.isNotEmpty) {
+        for (var doc in querySnapshot.docs.toList()) {
+          ErrorApi error = ErrorApi.fromJson(doc);
+          docs.add(error);
+        }
+      }
+      return Future.value(docs);
+    } catch (e) {
+      print(e);
+      return Future.error([]);
+    }
+  }
+
+  Future<bool> deleteErrorApi(String id) async {
+    try {
+      await firestore.collection("error_backend").doc(id).delete();
+      return true;
+    } catch (e) {
+      print(e);
+      return false;
     }
   }
 }
