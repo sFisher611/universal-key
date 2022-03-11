@@ -86,6 +86,25 @@ class _ActivePageState extends State<ActivePage> with TickerProviderStateMixin {
                   delegate: _delegate,
                 );
                 print(selected);
+                var codeResult;
+                if (_tabController.index == 0) {
+                  codeResult = resuNotActiveList
+                      .where((Code i) => i.code.contains(selected));
+                } else {
+                  codeResult = resuActiveList
+                      .where((Code i) => i.code.contains(selected));
+                }
+
+                Navigator.pushNamed(
+                  context,
+                  RouteGenerator.editCode,
+                  arguments: codeResult.first,
+                ).then((value) {
+                  if (value != null) {
+                    _loadingActive();
+                    _loadingNotActive();
+                  }
+                });
               },
               icon: Icon(Icons.search)),
         ],
@@ -137,7 +156,7 @@ class _ActivePageState extends State<ActivePage> with TickerProviderStateMixin {
                           RouteGenerator.editCode,
                           arguments: resuNotActiveList[index],
                         ).then((value) {
-                          if (value) {
+                          if (value != null) {
                             _loadingActive();
                             _loadingNotActive();
                           }
@@ -169,7 +188,7 @@ class _ActivePageState extends State<ActivePage> with TickerProviderStateMixin {
                                 RouteGenerator.editCode,
                                 arguments: resuActiveList[index],
                               ).then((value) {
-                                if (value) {
+                                if (value != null) {
                                   _loadingActive();
                                   _loadingNotActive();
                                 }
