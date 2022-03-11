@@ -8,6 +8,8 @@ import 'package:math_crud/db/database.dart';
 import 'package:math_crud/models/code.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
+import '../service/http_json.dart';
+
 class EditCodePage extends StatefulWidget {
   EditCodePage({Key key, @required this.data}) : super(key: key);
   Code data;
@@ -25,7 +27,7 @@ class _EditCodePageState extends State<EditCodePage> {
   TextEditingController _nameController = TextEditingController(text: '');
   bool status = false;
   DataBase db = DataBase();
-  bool upDate = false;
+  bool upDate;
   @override
   void initState() {
     super.initState();
@@ -50,13 +52,19 @@ class _EditCodePageState extends State<EditCodePage> {
         ip: _ipController.text,
         active: status);
     db.initiliase();
-    db.update(_code).then((bool value) {
+    db.update(_code).then((bool value) async {
       setState(() {
         _isLoading = false;
         upDate = true;
       });
       if (value) {
         _showToast(context, 'Success');
+        HttpJson httpJson = HttpJson();
+        httpJson.sendPushMessage(
+            token: widget.data.token,
+            body: 'Xabar',
+            title:
+                _code.active ? "Aktivlashdi!" : "Sizning aktivligingiz o'chdi");
         Navigator.pop(context, upDate);
       } else {
         _showToast(context, 'Error');
