@@ -80,17 +80,19 @@ class _MainPageState extends State<MainPage> {
             children: [
               MaterialButtonIconText(
                 size: size,
-                text: "Error",
+                text: "Error App",
                 icon: "assets/icons/error.png",
                 onPressed: () {
-                  print("object");
+                  Navigator.pushNamed(context, RouteGenerator.errorApp);
                 },
               ),
               MaterialButtonIconText(
                 size: size,
-                text: "Ads",
-                icon: "assets/icons/ticket.png",
-                onPressed: () {},
+                text: "Error API",
+                icon: "assets/icons/error_api.png",
+                onPressed: () {
+                  Navigator.pushNamed(context, RouteGenerator.errorAPI);
+                },
               ),
               MaterialButtonIconText(
                 size: size,

@@ -14,7 +14,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   DataBase db = DataBase();
-   Size size;
+  Size size;
   List resuList = [];
   @override
   void initState() {
@@ -119,7 +119,8 @@ class _HomePageState extends State<HomePage> {
                             ),
                           ),
                         ],
-                      ), Row(
+                      ),
+                      Row(
                         children: [
                           const Text(
                             "Name: ",
@@ -211,15 +212,6 @@ class _HomePageState extends State<HomePage> {
                 ],
               ),
             );
-            // return ListTile(
-            //   title: Text(resuList[index]['name']),
-            //   subtitle: Text(resuList[index]['id']),
-            //   // leading: Text(resuList[index]['date'].toString()),
-            //   trailing: Icon(Icons.delete),
-            //   onTap: () async {
-            //     await db.delete(resuList[index]['id']);
-            //   },
-            // );
           },
         ),
       ),
