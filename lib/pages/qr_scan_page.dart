@@ -48,7 +48,13 @@ class _QRScanPageState extends State<QRScanPage> {
       if (code == null) {
         EasyLoading.showInfo("Is Empty");
       } else {
-        Navigator.pushNamed(context, RouteGenerator.editCode, arguments: code);
+        Navigator.pushNamed(context, RouteGenerator.editCode, arguments: code)
+            .then((value) async {
+          await controller?.resumeCamera();
+          setState(() {
+            result = null;
+          });
+        });
       }
     });
   }
@@ -103,7 +109,7 @@ class _QRScanPageState extends State<QRScanPage> {
                   children: <Widget>[
                     if (result != null)
                       Text(
-                        'Barcode Type: ${describeEnum(result.format)}   Data: ${result.code}',
+                        'Barcode Type: ${describeEnum(result.format)}   Data: ${result.code.replaceAll('http://', '')}',
                         style: const TextStyle(
                           fontFamily: "ComicNeue",
                           color: Colors.white,
@@ -144,7 +150,9 @@ class _QRScanPageState extends State<QRScanPage> {
                               ),
                               IconButton(
                                 onPressed: () async {
-                                  _loadingDataDB(result.code.toString());
+                                  _loadingDataDB(result.code
+                                      .replaceAll('http://', '')
+                                      .toString());
                                 },
                                 iconSize: 50,
                                 icon: Icon(
