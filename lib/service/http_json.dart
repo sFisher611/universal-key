@@ -4,7 +4,7 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:http/http.dart' as http;
 
 class HttpJson {
-  void sendPushMessage({String token, String body, String title}) async {
+   sendPushMessage({String token, String body, String title}) async {
     try {
       var res = await http.post(
         Uri.parse('https://fcm.googleapis.com/fcm/send'),
@@ -29,7 +29,7 @@ class HttpJson {
       if (res.statusCode == 200) {
         EasyLoading.showSuccess('Success:${res.statusCode}');
       } else {
-        EasyLoading.showError('Error:${res.statusCode}');
+        EasyLoading.showSuccess('Error:${res.statusCode}');
       }
     } catch (e) {
       EasyLoading.showInfo("Internet");
