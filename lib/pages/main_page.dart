@@ -96,8 +96,8 @@ class _MainPageState extends State<MainPage> {
               ),
               MaterialButtonIconText(
                 size: size,
-                text: "Map",
-                icon: "assets/icons/map.png",
+                text: "Send Message",
+                icon: "assets/icons/message.png",
                 onPressed: () {},
               )
             ],
@@ -148,13 +148,17 @@ class _MainPageState extends State<MainPage> {
                 size: size,
                 text: "Info",
                 icon: "assets/icons/info.png",
-                onPressed: () {},
+                onPressed: () {
+                  //
+                },
               ),
               MaterialButtonIconText(
                 size: size,
                 text: "Settings",
                 icon: "assets/icons/settings.png",
-                onPressed: () {},
+                onPressed: () {
+                  //
+                },
               )
             ],
           )

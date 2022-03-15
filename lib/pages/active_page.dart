@@ -8,6 +8,7 @@ import 'package:math_crud/db/database.dart';
 import 'package:math_crud/models/code.dart';
 import 'package:math_crud/route/route_generator.dart';
 
+import '../widgets/card_active.dart';
 import '../widgets/card_not_active.dart';
 
 class ActivePage extends StatefulWidget {
@@ -178,7 +179,7 @@ class _ActivePageState extends State<ActivePage> with TickerProviderStateMixin {
                   itemBuilder: (BuildContext context, int index) {
                     return resuActiveList.isEmpty
                         ? Container()
-                        : CardNotActive(
+                        : CardActive(
                             resuList: resuActiveList,
                             size: size,
                             index: index,

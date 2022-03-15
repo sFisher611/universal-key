@@ -14,7 +14,7 @@ import '../route/route_generator.dart';
 
 class ErrorApiInfoPage extends StatefulWidget {
   ErrorApiInfoPage({Key key, @required this.data}) : super(key: key);
-  ErrorApi data;
+  String data;
 
   @override
   State<ErrorApiInfoPage> createState() => _ErrorApiInfoPageState();
@@ -31,21 +31,13 @@ class _ErrorApiInfoPageState extends State<ErrorApiInfoPage> {
   String url = '';
   String params = "";
   String response = "";
+  String code = "";
   DataBase db = DataBase();
   bool upDate;
   @override
   void initState() {
     super.initState();
-    setState(() {
-      _codeController.text = widget.data.code;
-      _dateController.text = widget.data.date;
-      _ipController.text = widget.data.ip;
-      _nameController.text = widget.data.name;
-      errorText = widget.data.error;
-      url = widget.data.url;
-      response = widget.data.response;
-      params = widget.data.params;
-    });
+    _loadingData();
   }
 
   void _showToast(BuildContext context, text) {
@@ -59,12 +51,38 @@ class _ErrorApiInfoPageState extends State<ErrorApiInfoPage> {
     );
   }
 
-  _loadingDataInfo() {
+  _loadingData() async {
     setState(() {
-      _isLoading = false;
+      _isLoading = true;
     });
     db.initiliase();
-    db.searchCode(widget.data.code).then((Code code) {
+    db.readErrorApiID(widget.data).then((ErrorApi errorApi) {
+      setState(() {
+        _isLoading = false;
+      });
+      if (errorApi == null) {
+        EasyLoading.showInfo("Is Empty");
+      } else {
+        setState(() {
+          _codeController.text = errorApi.code;
+          _dateController.text = errorApi.date;
+          _ipController.text = errorApi.ip;
+          _nameController.text = errorApi.name;
+          errorText = errorApi.error;
+          url = errorApi.url;
+          response = errorApi.response;
+          params = errorApi.params;
+        });
+      }
+    });
+  }
+
+  _loadingDataInfo() async {
+    setState(() {
+      _isLoading = true;
+    });
+    db.initiliase();
+    db.searchCode(_codeController.text).then((Code code) {
       setState(() {
         _isLoading = false;
       });
@@ -78,7 +96,7 @@ class _ErrorApiInfoPageState extends State<ErrorApiInfoPage> {
 
   _loadingDelete() async {
     db.initiliase();
-    db.deleteErrorApi(widget.data.id).then((bool value) {
+    db.deleteErrorApi(widget.data).then((bool value) {
       if (value) {
         _showToast(context, 'Success');
         Navigator.pop(context, true);
@@ -122,15 +140,15 @@ class _ErrorApiInfoPageState extends State<ErrorApiInfoPage> {
                 children: [
                   Column(children: [
                     Hero(
-                      tag: widget.data.id,
+                      tag: widget.data,
                       child: GestureDetector(
                         onLongPress: () {
                           _showDL("do you want to delete".toUpperCase(),
-                              widget.data.id);
+                              widget.data);
                         },
                         child: Container(
                           child: QrImage(
-                            data: widget.data.id,
+                            data: widget.data,
                             version: QrVersions.auto,
                             size: size.height * 0.2,
                             eyeStyle: const QrEyeStyle(
@@ -195,7 +213,7 @@ class _ErrorApiInfoPageState extends State<ErrorApiInfoPage> {
                     ),
                     InkWell(
                       onLongPress: () async {
-                        await FlutterClipboard.copy(widget.data.url);
+                        await FlutterClipboard.copy(url);
                         EasyLoading.showToast(
                           "COPY",
                           toastPosition: EasyLoadingToastPosition.top,
@@ -232,7 +250,7 @@ class _ErrorApiInfoPageState extends State<ErrorApiInfoPage> {
                     ),
                     InkWell(
                       onLongPress: () async {
-                        await FlutterClipboard.copy(widget.data.params);
+                        await FlutterClipboard.copy(params);
                         EasyLoading.showToast(
                           "COPY",
                           toastPosition: EasyLoadingToastPosition.top,
@@ -269,7 +287,7 @@ class _ErrorApiInfoPageState extends State<ErrorApiInfoPage> {
                     ),
                     InkWell(
                       onLongPress: () async {
-                        await FlutterClipboard.copy(widget.data.response);
+                        await FlutterClipboard.copy(response);
                         EasyLoading.showToast(
                           "COPY",
                           toastPosition: EasyLoadingToastPosition.top,
@@ -303,7 +321,7 @@ class _ErrorApiInfoPageState extends State<ErrorApiInfoPage> {
                     ),
                     InkWell(
                       onLongPress: () async {
-                        await FlutterClipboard.copy(widget.data.error);
+                        await FlutterClipboard.copy(errorText);
                         EasyLoading.showToast(
                           "COPY",
                           toastPosition: EasyLoadingToastPosition.top,
@@ -399,7 +417,7 @@ class _ErrorApiInfoPageState extends State<ErrorApiInfoPage> {
                   ElevatedButton(
                       onPressed: () {
                         _loadingDelete();
-                        Navigator.pop(context, true);
+                        // Navigator.pop(context, true);
                       },
                       style: ElevatedButton.styleFrom(
                         primary: Colors.blueGrey.shade600,

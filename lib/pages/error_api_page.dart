@@ -155,9 +155,11 @@ class _ErrorApiPageState extends State<ErrorApiPage> {
                           } else {
                             Navigator.pushNamed(
                                     context, RouteGenerator.errorApiInfo,
-                                    arguments: resultError[index])
+                                    arguments: resultError[index].id)
                                 .then((value) {
-                              _loadingError();
+                              if (value != null) {
+                                _loadingError();
+                              }
                             });
                           }
                         },

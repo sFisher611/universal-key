@@ -182,8 +182,7 @@ class DataBase {
     QuerySnapshot querySnapshot;
     List<ErrorApi> docs = [];
     try {
-      querySnapshot =
-          await firestore.collection("error_backend").orderBy('date').get();
+      querySnapshot = await firestore.collection("error_backend").get();
       if (querySnapshot.docs.isNotEmpty) {
         for (var doc in querySnapshot.docs.toList()) {
           ErrorApi error = ErrorApi.fromJson(doc);
@@ -194,6 +193,26 @@ class DataBase {
     } catch (e) {
       print(e);
       return Future.error([]);
+    }
+  }
+
+  Future<ErrorApi> readErrorApiID(errorId) async {
+    QuerySnapshot querySnapshot;
+    ErrorApi error;
+    try {
+      querySnapshot = await firestore
+          .collection("error_backend")
+          .where(FieldPath.documentId, isEqualTo: errorId)
+          .get();
+      if (querySnapshot.docs.isNotEmpty) {
+        for (var doc in querySnapshot.docs.toList()) {
+          error = ErrorApi.fromJson(doc);
+        }
+      }
+      return Future.value(error);
+    } catch (e) {
+      print(e);
+      return Future.error(null);
     }
   }
 

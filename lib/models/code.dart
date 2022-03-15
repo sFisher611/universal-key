@@ -12,6 +12,7 @@ class Code {
     this.token,
     this.errorApi,
     this.errorApp,
+    this.check,
   });
 
   String date;
@@ -24,6 +25,7 @@ class Code {
   bool errorApi;
   bool errorApp;
   bool active;
+  bool check;
 
   factory Code.fromJson(var json) => Code(
         date: DateFormat('dd.MM.yyyy – kk:mm').format(
@@ -38,6 +40,7 @@ class Code {
         token: json['token'],
         errorApi: json['error_api'],
         errorApp: json['error_app'],
+        check: false,
       );
 
   Map<String, dynamic> toJson() => {
