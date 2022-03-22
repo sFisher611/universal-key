@@ -42,7 +42,7 @@ class _ActivePageState extends State<ActivePage> with TickerProviderStateMixin {
       resuNotActiveList = [];
     });
     await Future.delayed(const Duration(milliseconds: 500));
-    db.initiliase();
+    db.initializes();
     db.readNotActive(false).then((List<Code> value) {
       setState(() {
         _isLoading = false;
@@ -58,7 +58,7 @@ class _ActivePageState extends State<ActivePage> with TickerProviderStateMixin {
       resuActiveList = [];
     });
     await Future.delayed(const Duration(milliseconds: 500));
-    db.initiliase();
+    db.initializes();
     db.readNotActive(true).then((List<Code> value) {
       setState(() {
         _isLoading = false;
