@@ -55,7 +55,7 @@ class _ErrorApiInfoPageState extends State<ErrorApiInfoPage> {
     setState(() {
       _isLoading = true;
     });
-    db.initiliase();
+    db.initializes();
     db.readErrorApiID(widget.data).then((ErrorApi errorApi) {
       setState(() {
         _isLoading = false;
@@ -81,7 +81,7 @@ class _ErrorApiInfoPageState extends State<ErrorApiInfoPage> {
     setState(() {
       _isLoading = true;
     });
-    db.initiliase();
+    db.initializes();
     db.searchCode(_codeController.text).then((Code code) {
       setState(() {
         _isLoading = false;
@@ -95,7 +95,7 @@ class _ErrorApiInfoPageState extends State<ErrorApiInfoPage> {
   }
 
   _loadingDelete() async {
-    db.initiliase();
+    db.initializes();
     db.deleteErrorApi(widget.data).then((bool value) {
       if (value) {
         _showToast(context, 'Success');
