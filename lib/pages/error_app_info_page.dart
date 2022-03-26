@@ -57,7 +57,7 @@ class _ErrorAppInfoPageState extends State<ErrorAppInfoPage> {
     setState(() {
       _isLoading = false;
     });
-    db.initiliase();
+    db.initializes();
     db.searchCode(widget.data.code).then((Code code) {
       setState(() {
         _isLoading = false;
@@ -71,7 +71,7 @@ class _ErrorAppInfoPageState extends State<ErrorAppInfoPage> {
   }
 
   _loadingDelete() async {
-    db.initiliase();
+    db.initializes();
     db.deleteErrorApp(widget.data.id).then((bool value) {
       if (value) {
         _showToast(context, 'Success');
