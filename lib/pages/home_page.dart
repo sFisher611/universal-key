@@ -3,7 +3,7 @@ import 'package:math_crud/db/database.dart';
 
 import 'package:qr_flutter/qr_flutter.dart';
 
-import '../models/code.dart';
+
 
 class HomePage extends StatefulWidget {
   const HomePage({Key key}) : super(key: key);
@@ -23,7 +23,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   _dataBase() async {
-    db.initiliase();
+    db.initializes();
     // for (int i = 0; i < 10; i++) {
     //   Code code = Code(
     //       code: '3562$i', name: "Fargon$i", active: true, date: "", ip: '');
