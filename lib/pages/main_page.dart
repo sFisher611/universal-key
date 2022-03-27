@@ -38,7 +38,7 @@ class _MainPageState extends State<MainPage> {
       body: Column(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
-          LinerContainer(
+          const LinerContainer(
             text: "Controller",
           ),
           Row(
@@ -49,7 +49,7 @@ class _MainPageState extends State<MainPage> {
                 text: "All branch",
                 icon: "assets/icons/list.png",
                 onPressed: () {
-                  Navigator.pushNamed(context, RouteGenerator.home);
+                  // Navigator.pushNamed(context, RouteGenerator.home);
                 },
               ),
               MaterialButtonIconText(
@@ -65,7 +65,8 @@ class _MainPageState extends State<MainPage> {
                 text: "Scanner",
                 icon: "assets/icons/qr.png",
                 onPressed: () async {
-                  Navigator.pushNamed(context, RouteGenerator.qrScan);
+                  await showDialogScanner(context);
+
                   // Box box = await Hive.openBox('db');
                   // String token = await box.get('token');
                   // HttpJson httpJson = HttpJson();
@@ -83,7 +84,7 @@ class _MainPageState extends State<MainPage> {
                 text: "Error App",
                 icon: "assets/icons/error.png",
                 onPressed: () {
-                  Navigator.pushNamed(context, RouteGenerator.errorApp);
+                  // Navigator.pushNamed(context, RouteGenerator.errorApp);
                 },
               ),
               MaterialButtonIconText(
@@ -91,7 +92,7 @@ class _MainPageState extends State<MainPage> {
                 text: "Error API",
                 icon: "assets/icons/error_api.png",
                 onPressed: () {
-                  Navigator.pushNamed(context, RouteGenerator.errorAPI);
+                  // Navigator.pushNamed(context, RouteGenerator.errorAPI);
                 },
               ),
               MaterialButtonIconText(
@@ -164,6 +165,70 @@ class _MainPageState extends State<MainPage> {
           )
         ],
       ),
+    );
+  }
+
+  Future<dynamic> showDialogScanner(BuildContext context) {
+    return showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+          backgroundColor: Colors.black,
+          elevation: 10,
+          content: Row(
+            mainAxisSize: MainAxisSize.min,
+            // mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              InkWell(
+                onTap: () {
+                  Navigator.pushNamed(context, RouteGenerator.qrScan)
+                      .then((value) {
+                    Navigator.pop(context);
+                  });
+                },
+                borderRadius: BorderRadius.circular(10),
+                child: Container(
+                  height: 100,
+                  width: 100,
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                      color: Colors.white10),
+                  child: const Padding(
+                    padding: EdgeInsets.all(20.0),
+                    child: ImageIcon(
+                      AssetImage("assets/icons/camera.png"),
+                      // size: 80,
+                      color: Colors.grey,
+                    ),
+                  ),
+                ),
+              ),
+              const Spacer(),
+              InkWell(
+                onTap: () {
+                  Navigator.pushNamed(context, RouteGenerator.activeSearch)
+                      .then((value) {
+                    Navigator.pop(context);
+                  });
+                },
+                borderRadius: BorderRadius.circular(10),
+                child: Container(
+                  height: 100,
+                  width: 100,
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                      color: Colors.white10),
+                  child: const Padding(
+                    padding: EdgeInsets.all(20.0),
+                    child: ImageIcon(
+                      AssetImage("assets/icons/text_editor.png"),
+                      // size: 80,
+                      color: Colors.grey,
+                    ),
+                  ),
+                ),
+              )
+            ],
+          )),
     );
   }
 }
