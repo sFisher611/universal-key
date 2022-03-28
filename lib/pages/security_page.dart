@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:hive/hive.dart';
 import 'package:math_crud/models/password_position.dart';
@@ -11,6 +12,9 @@ import 'package:math_crud/widgets/material_icon_button.dart';
 import 'package:math_crud/widgets/material_number_button.dart';
 import 'package:math_crud/widgets/password_widget.dart';
 
+import '../db/database.dart';
+import '../models/admin.dart';
+
 class SecurityPage extends StatefulWidget {
   const SecurityPage({Key key}) : super(key: key);
 
@@ -19,7 +23,7 @@ class SecurityPage extends StatefulWidget {
 }
 
 class _SecurityPageState extends State<SecurityPage> {
-   Size size;
+  Size size;
   bool _isAnim = false;
   PasswordPosition passwordPosition1 = PasswordPosition(text: "", active: true);
   PasswordPosition passwordPosition2 =
@@ -30,12 +34,13 @@ class _SecurityPageState extends State<SecurityPage> {
       PasswordPosition(text: "", active: false);
   bool _isLoading = false;
   String key = '';
-
+  bool notActive = false;
   @override
   void initState() {
     super.initState();
     _startAnimation();
     _loadingKeyAdmin();
+
     setState(() {
       key = FunctionGenerator.generatorKey();
     });
@@ -44,17 +49,30 @@ class _SecurityPageState extends State<SecurityPage> {
   _loadingKeyAdmin() async {
     Box box = await Hive.openBox('base');
     var admin = await box.get('admin');
+
     if (admin != null) {
       setState(() {
         _isLoading = true;
       });
       await Future.delayed(const Duration(milliseconds: 2000));
+
       setState(() {
         _isLoading = false;
       });
-
-      Navigator.of(context).pushNamedAndRemoveUntil(
-          RouteGenerator.main, (Route<dynamic> route) => false);
+      try {
+        String token = await box.get("token");
+        DataBase db = DataBase();
+        db.initializes();
+        db.searchAdmin(token).then((Admin adminResult) {
+          if (adminResult.active) {
+            Navigator.of(context).pushNamedAndRemoveUntil(
+                RouteGenerator.main, (Route<dynamic> route) => false);
+          } else {
+            notActive = true;
+            EasyLoading.showInfo("Not active!!!");
+          }
+        });
+      } catch (_) {}
     }
   }
 
@@ -66,22 +84,46 @@ class _SecurityPageState extends State<SecurityPage> {
   }
 
   void _checkPassword() async {
-    setState(() {
-      _isLoading = true;
-    });
-    await Future.delayed(const Duration(milliseconds: 5000));
-    setState(() {
-      _isLoading = false;
-    });
-    String text = passwordPosition1.text +
-        passwordPosition2.text +
-        passwordPosition3.text +
-        passwordPosition4.text;
-    if (FunctionGenerator.generatorCheck(text, key.toString())) {
-      Box box = await Hive.openBox('base');
-      await box.put("admin", '1');
-      Navigator.of(context).pushNamedAndRemoveUntil(
-          RouteGenerator.main, (Route<dynamic> route) => false);
+    if (!notActive) {
+      setState(() {
+        _isLoading = true;
+      });
+      await Future.delayed(const Duration(milliseconds: 2000));
+      setState(() {
+        _isLoading = false;
+      });
+      String text = passwordPosition1.text +
+          passwordPosition2.text +
+          passwordPosition3.text +
+          passwordPosition4.text;
+      if (FunctionGenerator.generatorCheck(text, key.toString())) {
+        notActive = true;
+        Box box = await Hive.openBox('base');
+        String token = await box.get("token");
+        if (token != null) {
+          loadingAdminUser(token);
+        }
+      } else {
+        EasyLoading.showError('');
+      }
+    } else {
+      EasyLoading.showInfo("You can't do that!");
+    }
+  }
+
+  loadingAdminUser(token) async {
+    if (token != null) {
+      DataBase db = DataBase();
+      Admin admin = Admin(name: 'user', token: token);
+      await db.initializes();
+      db.searchAdmin(token).then((Admin adminResult) async {
+        if (adminResult == null) {
+          await db.createAdmin(admin);
+          EasyLoading.showSuccess("OK");
+          Box box = await Hive.openBox('base');
+          await box.put("admin", '1');
+        }
+      });
     }
   }
 
