@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:math_crud/pages/active_page.dart';
+import 'package:math_crud/pages/active_search_page.dart';
 import 'package:math_crud/pages/edit_code_page.dart';
 import 'package:math_crud/pages/error_api_info_page.dart';
 import 'package:math_crud/pages/error_api_page.dart';
@@ -24,6 +25,7 @@ class RouteGenerator {
   static const String errorAppInfo = '/errorAppInfo';
   static const String errorAPI = '/errorApi';
   static const String errorApiInfo = '/errorApiInfo';
+  static const String activeSearch = '/activeSearch';
 
   static Route<dynamic> generateRoute(RouteSettings settings) {
     final args = settings.arguments;
@@ -42,6 +44,8 @@ class RouteGenerator {
         return MaterialPageRoute(builder: (_) => const ErrorAppPage());
       case RouteGenerator.errorAPI:
         return MaterialPageRoute(builder: (_) => const ErrorApiPage());
+      case RouteGenerator.activeSearch:
+        return MaterialPageRoute(builder: (_) => const ActiveSearchPage());
       case RouteGenerator.errorApiInfo:
         if (args != null) {
           return MaterialPageRoute(
