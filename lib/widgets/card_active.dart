@@ -64,49 +64,48 @@ class CardActive extends StatelessWidget {
             const SizedBox(
               width: 10,
             ),
-            Column(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-
-                    Text(
-                      resuList[index].name,
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontFamily: "ComicNeue",
-                        fontWeight: FontWeight.bold,
-                        fontSize: 25,
-                      ),
+            Expanded(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    resuList[index].name ,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontFamily: "ComicNeue",
+                      fontWeight: FontWeight.bold,
+                      fontSize: 20,
                     ),
-                  ],
-                ),
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      "ip: ",
-                      style: TextStyle(
-                        color: Colors.white60,
-                        fontFamily: "ComicNeue",
-                        fontSize: 12,
+                  ),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        "branch: ",
+                        style: TextStyle(
+                          color: Colors.white60,
+                          fontFamily: "ComicNeue",
+                          fontSize: 12,
+                        ),
                       ),
-                    ),
-                    Text(
-                      resuList[index].ip,
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontFamily: "ComicNeue",
-                        fontWeight: FontWeight.bold,
-                        fontSize: 15,
+                      Text(
+                        resuList[index].branchId == ""
+                            ? ""
+                            : resuList[index].branchId.substring(
+                                resuList[index].branchId.indexOf(":") + 1,
+                                resuList[index].branchId.length),
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontFamily: "ComicNeue",
+                          fontWeight: FontWeight.w500,
+                          fontSize: 12,
+                        ),
                       ),
-                    ),
-                  ],
-                ),
-             
-              ],
+                    ],
+                  ),
+                ],
+              ),
             )
           ],
         ),

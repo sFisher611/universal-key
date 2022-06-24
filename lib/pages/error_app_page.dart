@@ -31,7 +31,7 @@ class _ErrorAppPageState extends State<ErrorAppPage> {
       resultError = [];
     });
     await Future.delayed(const Duration(milliseconds: 500));
-    db.initiliase();
+    db.initializes();
     db.readErrorApp().then((List<ErrorApp> value) {
       setState(() {
         _isLoading = false;
@@ -52,7 +52,7 @@ class _ErrorAppPageState extends State<ErrorAppPage> {
   }
 
   _loadingDelete(id) async {
-    db.initiliase();
+    db.initializes();
     db.deleteErrorApp(id).then((bool value) {
       if (value) {
         _showToast(context, 'Success');

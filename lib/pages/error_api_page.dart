@@ -32,7 +32,7 @@ class _ErrorApiPageState extends State<ErrorApiPage> {
       resultError = [];
     });
     await Future.delayed(const Duration(milliseconds: 500));
-    db.initiliase();
+    db.initializes();
     db.readErrorApi().then((List<ErrorApi> value) {
       setState(() {
         _isLoading = false;
@@ -53,7 +53,7 @@ class _ErrorApiPageState extends State<ErrorApiPage> {
   }
 
   _loadingDelete(id) async {
-    db.initiliase();
+    db.initializes();
     db.deleteErrorApi(id).then((bool value) {
       if (value) {
         // _showToast(context, 'Success');

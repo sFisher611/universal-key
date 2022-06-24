@@ -1,5 +1,3 @@
-
-
 class Admin {
   Admin({
     this.id,
@@ -15,10 +13,10 @@ class Admin {
   bool active;
 
   factory Admin.fromJson(var json) => Admin(
-        id: json.id,
-        name: json["name"],
-        token: json['token'],
-      );
+      id: json.id,
+      name: json["name"],
+      token: json['token'],
+      active: json['active']);
 
   Map<String, dynamic> toJson() => {
         "id": id,

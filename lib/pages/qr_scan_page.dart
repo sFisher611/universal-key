@@ -40,7 +40,7 @@ class _QRScanPageState extends State<QRScanPage> {
       _isLoading = true;
     });
     await Future.delayed(const Duration(milliseconds: 1000));
-    await db.initiliase();
+    await db.initializes();
     db.searchCode(codeResult).then((Code code) {
       setState(() {
         _isLoading = false;

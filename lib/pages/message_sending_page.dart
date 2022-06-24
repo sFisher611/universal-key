@@ -30,7 +30,7 @@ class _MessageSendingPageState extends State<MessageSendingPage> {
       resuActiveList = [];
     });
     await Future.delayed(const Duration(milliseconds: 500));
-    db.initiliase();
+    db.initializes();
     db.readNotActive(true).then((List<Code> value) {
       setState(() {
         _isLoading = false;

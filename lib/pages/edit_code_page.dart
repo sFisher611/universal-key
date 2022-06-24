@@ -2,13 +2,15 @@ import 'dart:ui';
 
 import 'package:custom_switch/custom_switch.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:math_crud/db/database.dart';
 import 'package:math_crud/models/code.dart';
+import 'package:math_crud/models/universal.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
 import '../service/http_json.dart';
+import '../widgets/text_field_container.dart';
+import '../widgets/type_ahead_field_autocomplete.dart';
 
 class EditCodePage extends StatefulWidget {
   EditCodePage({Key key, @required this.data}) : super(key: key);
@@ -21,10 +23,13 @@ class EditCodePage extends StatefulWidget {
 class _EditCodePageState extends State<EditCodePage> {
   Size size;
   bool _isLoading = false;
+  List<UniversalModel> listBranch = [];
   TextEditingController _dateController = TextEditingController(text: '');
   TextEditingController _codeController = TextEditingController(text: '');
   TextEditingController _ipController = TextEditingController(text: '');
   TextEditingController _nameController = TextEditingController(text: '');
+  TextEditingController _branchController = TextEditingController(text: '');
+  UniversalModel selectBranch = UniversalModel(id: "0", name: '');
   bool status = false;
   DataBase db = DataBase();
   bool upDate;
@@ -36,7 +41,32 @@ class _EditCodePageState extends State<EditCodePage> {
       _dateController.text = widget.data.date;
       _ipController.text = widget.data.ip;
       _nameController.text = widget.data.name;
+
       status = widget.data.active;
+      if (widget.data.branchId != '') {
+        String branch = widget.data.branchId;
+        selectBranch = UniversalModel(
+            id: branch.substring(0, branch.indexOf(":")),
+            name: branch.substring(branch.indexOf(":") + 1, branch.length));
+        _branchController.text =
+            branch.substring(branch.indexOf(":") + 1, branch.length);
+      }
+    });
+    _loadingBranchs();
+  }
+
+  _loadingBranchs() async {
+    setState(() {
+      _isLoading = true;
+    });
+    db.initializes();
+    db.readBranch().then((List<UniversalModel> value) {
+      setState(() {
+        listBranch.addAll(value);
+      });
+      setState(() {
+        _isLoading = false;
+      });
     });
   }
 
@@ -46,12 +76,14 @@ class _EditCodePageState extends State<EditCodePage> {
     });
     await Future.delayed(const Duration(milliseconds: 500));
     Code _code = Code(
-        id: widget.data.id,
-        date: widget.data.date,
-        name: _nameController.text,
-        ip: _ipController.text,
-        active: status);
-    db.initiliase();
+      id: widget.data.id,
+      date: widget.data.date,
+      name: _nameController.text,
+      ip: _ipController.text,
+      active: status,
+      branchId: "${selectBranch.id}:${selectBranch.name}",
+    );
+    db.initializes();
     db.update(_code).then((bool value) async {
       setState(() {
         _isLoading = false;
@@ -77,7 +109,7 @@ class _EditCodePageState extends State<EditCodePage> {
       _isLoading = true;
     });
     await Future.delayed(const Duration(milliseconds: 500));
-    db.initiliase();
+    db.initializes();
     db.delete(id).then((bool value) {
       if (value) {
         _showToast(context, 'Success');
@@ -179,16 +211,36 @@ class _EditCodePageState extends State<EditCodePage> {
                       height: 10,
                     ),
                     TextFieldContainer(
-                      keyboardType: TextInputType.number,
-                      controller: _ipController,
-                      title: "IP",
+                      controller: _nameController,
+                      title: "Name",
                     ),
                     const SizedBox(
                       height: 10,
                     ),
-                    TextFieldContainer(
-                      controller: _nameController,
-                      title: "Name",
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 20),
+                          child: Text(
+                            "Branch",
+                            style: TextStyle(
+                              color: Colors.white54,
+                              fontFamily: "ComicNeue",
+                            ),
+                          ),
+                        ),
+                        TypeAheadFieldAutocomplete(
+                          controller: _branchController,
+                          list: listBranch,
+                          onSelected: (value) {
+                            selectBranch = value;
+                            setState(() {
+                              _branchController.text = value.name;
+                            });
+                          },
+                        ),
+                      ],
                     ),
                     const SizedBox(
                       height: 20,
@@ -322,73 +374,4 @@ class _EditCodePageState extends State<EditCodePage> {
   }
 }
 
-class TextFieldContainer extends StatelessWidget {
-  TextFieldContainer({
-    Key key,
-    @required this.controller,
-    @required this.title,
-    this.enable = true,
-    this.keyboardType,
-  }) : super(key: key);
-  String title;
-  TextEditingController controller;
-  bool enable;
-  TextInputType keyboardType;
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20),
-          child: Text(
-            title,
-            style: const TextStyle(
-              color: Colors.white54,
-              fontFamily: "ComicNeue",
-            ),
-          ),
-        ),
-        Container(
-          margin: const EdgeInsets.symmetric(horizontal: 10),
-          decoration: BoxDecoration(
-            color: Colors.white24,
-            borderRadius: BorderRadius.circular(10),
-          ),
-          child: TextField(
-            enabled: enable,
-            keyboardType: keyboardType,
-            inputFormatters: [MyFormater()],
-            style: const TextStyle(
-              color: Colors.white70,
-              fontSize: 17,
-              fontFamily: "ComicNeue",
-            ),
-            controller: controller,
-            decoration: const InputDecoration(
-              border: InputBorder.none,
-              contentPadding:
-                  EdgeInsets.symmetric(vertical: 15, horizontal: 20),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-}
 
-class MyFormater extends TextInputFormatter {
-  static String defaultFormat(String text) {
-    // Do whatever you want
-    return text + '1';
-  }
-
-  @override
-  TextEditingValue formatEditUpdate(
-      TextEditingValue oldValue, TextEditingValue newValue) {
-    // Your validations/formats
-    // print("old value:" + oldValue.text);
-    // print("new value:" + newValue.text);
-    return null;
-  }
-}
